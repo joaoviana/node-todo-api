@@ -1,6 +1,6 @@
-//creating a model
+var mongoose = require('mongoose');
+
 var Todo = mongoose.model('Todo', {
-  //adding validators
   text : {
     type: String,
     required:true,
@@ -17,25 +17,5 @@ var Todo = mongoose.model('Todo', {
   }
 });
 
-// //creating new instance
-// var newTodo = new Todo( {
-//   text: 'Cook dinner',
-//
-// });
-//
-// //returns promise
-// newTodo.save().then((doc) => {
-//   console.log('Saved todo', doc)
-// }, (e) => {
-//   console.log('Unable to save todo');
-// });
 
-// var otherTodo = new Todo ( {
-//   text: 'dont forget to have fun'
-// });
-//
-// otherTodo.save().then((doc) => {
-//   console.log(JSON.stringify(doc,undefined,2));
-// }, (e) => {
-//   console.log('Unable to save', e);
-// });
+module.exports = {Todo};
