@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
+const bcrypt = require('bcryptjs');
 
 //gonna store the schema, the properties
 var UserSchema = new mongoose.Schema({
@@ -71,6 +72,22 @@ UserSchema.statics.findByToken = function(token) {
     'tokens.access':'auth'
   });
 };
+
+UserSchema.pre('save', function(next) {
+  var user = this;
+
+  if(user.isModified('password')) {
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(user.password, salt, (err, hash) => {
+        user.password = hash;
+        next();//complete the middleware and move on to save the doc
+      } );
+    });
+  } else{
+    next();//if not called, middlware is not gonna complete and yup it will crash
+  }
+
+});
 
 var User = mongoose.model('User', UserSchema);
 

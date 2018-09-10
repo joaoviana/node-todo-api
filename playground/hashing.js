@@ -1,18 +1,35 @@
 const {SHA256} = require('crypto-js');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+
+var password = '123abc';
+
+//number of rounds, so no one can brute force these calls;
+//prevents someone making a million requests
+// bcrypt.genSalt(10, (err, salt) => {
+//   bcrypt.hash(password, salt, (err, hash) => {
+//     console.log(hash);
+//   } );
+// });
+
+var hashedPassword = "$2a$10$cSXDqQxNqAEgd4L9LjgxXeXwDQkMN2ZS/PGTpO62SRTEbKJv6Zi9q";
+
+bcrypt.compare(password, hashedPassword , (err, res) => {
+  console.log(res);
+});
 
 //jwt enconded and decoded: header and payload(which is really useful)
-
-var data = {
-  id: 10
-};
-//the secrete as 2nd arg
-var token = jwt.sign(data, '123abc');
-
-console.log(token);
-
-var decoded = jwt.verify(token,'123abc');
-console.log('decoded',decoded);
+//
+// var data = {
+//   id: 10
+// };
+// //the secrete as 2nd arg
+// var token = jwt.sign(data, '123abc');
+//
+// console.log(token);
+//
+// var decoded = jwt.verify(token,'123abc');
+// console.log('decoded',decoded);
 //
 // var message = 'I am user number 3';
 // //hashing is a one way algorithm
