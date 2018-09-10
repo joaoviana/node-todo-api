@@ -1,4 +1,5 @@
 require('./config/config');
+
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -9,7 +10,7 @@ var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
 
 var app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
@@ -69,8 +70,7 @@ app.delete('/todos/:id', (req, res) => {
   });
 });
 
-//http patch, when u want to update
-app.patch('/todos/:id', (req,res) => {
+app.patch('/todos/:id', (req, res) => {
   var id = req.params.id;
   var body = _.pick(req.body, ['text', 'completed']);
 
@@ -78,7 +78,7 @@ app.patch('/todos/:id', (req,res) => {
     return res.status(404).send();
   }
 
-  if(_.isBoolean(body.completed) && body.completed) {
+  if (_.isBoolean(body.completed) && body.completed) {
     body.completedAt = new Date().getTime();
   } else {
     body.completed = false;
@@ -86,15 +86,28 @@ app.patch('/todos/:id', (req,res) => {
   }
 
   Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
-    if(!todo) {
+    if (!todo) {
       return res.status(404).send();
     }
+
     res.send({todo});
-  }).catch((err) => {
+  }).catch((e) => {
     res.status(400).send();
   })
+});
 
+// POST /users
+app.post('/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']);
+  var user = new User(body);
 
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  }).catch((e) => {
+    res.status(400).send(e);
+  })
 });
 
 app.listen(port, () => {
