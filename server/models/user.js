@@ -52,6 +52,26 @@ UserSchema.methods.generateAuthToken = function () {
   });
 };
 
+//object like methods, but it would create a model method, instead of a instance method
+UserSchema.statics.findByToken = function(token) {
+  //instance methods get called wt the individual document; model methods get called with the model as the this binding
+  var User = this;
+  var decoded;
+
+  try{
+    decoded = jwt.verify(token, 'abc123');
+  }catch(err) {
+    return Promise.reject();
+  }
+
+  //quotes are required when dot is added
+  return User.findOne({
+    '_id':decoded._id,
+    'tokens.token':token,
+    'tokens.access':'auth'
+  });
+};
+
 var User = mongoose.model('User', UserSchema);
 
 module.exports = {User}
