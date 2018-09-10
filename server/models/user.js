@@ -53,6 +53,17 @@ UserSchema.methods.generateAuthToken = function () {
   });
 };
 
+
+UserSchema.methods.removeToken = function (token) {
+  var user = this;
+
+  return user.update({
+    $pull: {
+      tokens: {token}
+    }
+  });
+};
+
 //object like methods, but it would create a model method, instead of a instance method
 UserSchema.statics.findByToken = function(token) {
   //instance methods get called wt the individual document; model methods get called with the model as the this binding
@@ -108,6 +119,7 @@ UserSchema.pre('save', function(next) {
   }
 
 });
+
 
 var User = mongoose.model('User', UserSchema);
 
